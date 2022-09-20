@@ -1,0 +1,17 @@
+# The environment
+universe              = vanilla
+getenv                = True
+request_cpus          = 1
+request_memory        = 5G
+
+# Execution
+initialdir            = /data/project/FairAI_Hispanic/scripts/Unfairness_Hispanic/preparation
+executable            = /usr/bin/matlab95
+transfer_executable   = False
+
+arguments   = -singleCompThread -r ABCD_read_all_measures('/data/project/FairAI_Hispanic/data/inm7-superds/original/abcd/derivatives/abcd-hcp-pipeline','/data/project/FairAI_Hispanic/data/inm7-superds/original/abcd/derivatives/freesurfer-5.3.0-HCP','/data/project/FairAI_Hispanic/scripts/lists/subjects_rs_censor.txt','/data/project/FairAI_Hispanic/scripts/lists','_rs_censor',false)
+log         = /data/project/FairAI_Hispanic/scripts/logs/ABCD_read_all_measures_$(Cluster).$(Process).log
+output      = /data/project/FairAI_Hispanic/scripts/logs/ABCD_read_all_measures_$(Cluster).$(Process).out
+error       = /data/project/FairAI_Hispanic/scripts/logs/ABCD_read_all_measures_$(Cluster).$(Process).err
+requirements = Machine == "cpu10.htc.inm7.de"
+Queue
