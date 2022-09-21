@@ -22,7 +22,7 @@ transfer_executable   = False
 \n"
 
 # loop through lists
-for start in $(seq 2001 500 8501); do
+for start in $(seq 1 500 8501); do
     end=$(( start + 499 ))
     curr_ls=$proj_dir/scripts/lists/censor_${start}_${end}.txt
     printf "arguments = -singleCompThread -r ABCD_read_motion('/data/project/FairAI_Hispanic/data/inm7-superds/original/abcd/derivatives/abcd-hcp-pipeline','$curr_ls',1,'/data/project/FairAI_Hispanic/scripts/lists','_${start}_${end}')\n"

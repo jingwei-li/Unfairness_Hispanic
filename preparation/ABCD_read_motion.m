@@ -85,9 +85,11 @@ for i = 1:nsub
             end
 
             %% check if output FD and DVARS files already exist
-            if(exist(fullfile(outdir, 'DVARS', s, 'DVARS'), 'file') && exist(fullfile(outdir, 'FD', [s '.txt']), 'file'))
-                curr_FD(j) = mean(dlmread(fullfile(outdir, 'FD', [s '.txt'])));
-                curr_DVARS(j) = mean(dlmread(fullfile(outdir, 'DVARS', s, 'DVARS')));
+            if(exist(fullfile(outdir, 'DVARS', s, ['DVARS_' runnum]), 'file') && ...
+                exist(fullfile(outdir, 'FD', s, [runnum '.txt']), 'file'))
+
+                curr_FD(j) = mean(dlmread(fullfile(outdir, 'FD', s, [runnum '.txt'])));
+                curr_DVARS(j) = mean(dlmread(fullfile(outdir, 'DVARS', s, ['DVARS_' runnum])));
             else
                 %% FD
                 mt_tsv = [s '_' ses '_task-rest_' runnum '_desc-includingFD_motion.tsv'];
@@ -114,17 +116,18 @@ for i = 1:nsub
                 else
                     mt = tdfread(mt_tsv, ' ');
                 end
+                mkdir(fullfile(outdir, 'FD', s))
+                dlmwrite(fullfile(outdir, 'FD', s, [runnum '.txt']), mt.framewise_displacement)
 
                 %% DVARS
                 system(sprintf('datalad get -s inm7-storage %s', runs{j}))
                 mkdir(fullfile(outdir, 'DVARS', s))
                 system(sprintf('fsl_motion_outliers -i %s -o %s	-s %s -p %s --dvars --nomoco', runs{j}, ...
-                    fullfile(outdir, 'DVARS', s, 'confound_DVARS'), fullfile(outdir, 'DVARS', s, 'DVARS'), ...
-                    fullfile(outdir, 'DVARS', s, 'DVARS')))
+                    fullfile(outdir, 'DVARS', s, ['confound_DVARS_' runnum]), fullfile(outdir, 'DVARS', s, ['DVARS_' runnum]), ...
+                    fullfile(outdir, 'DVARS', s, ['DVARS_' runnum])))
 
-                dlmwrite(fullfile(outdir, 'FD', [s '.txt']), mt.framewise_displacement)
                 curr_FD(j) = mean(mt.framewise_displacement);
-                curr_DVARS(j) = mean(dlmread(fullfile(outdir, 'DVARS', s, 'DVARS')));
+                curr_DVARS(j) = mean(dlmread(fullfile(outdir, 'DVARS', s, ['DVARS_' runnum])));
 
                 %% drop datalad files
                 system(sprintf('datalad drop %s', runs{j}));
@@ -132,8 +135,8 @@ for i = 1:nsub
             end
             
         end
-        FD(s) = nanmean(curr_FD);
-        DVARS(s) = nanmean(curr_DVARS);
+        FD(i) = nanmean(curr_FD);
+        DVARS(i) = nanmean(curr_DVARS);
         cd(fmri_dir)
         system(sprintf('datalad uninstall %s', s));
     else
