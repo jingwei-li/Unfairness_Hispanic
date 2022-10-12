@@ -63,9 +63,8 @@ grp_id_read = d.(grp_hdr);
 fam_id = cell(nsub, 1);
 grp_id = cell(nsub, 1);
 for s = 1:nsub
-    tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s});
+    tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s}) & base_event;
     if(any(tmp_idx==1))
-        tmp_idx = tmp_idx & base_event;
         fam_id(s) = fam_id_read(tmp_idx,:);
         grp_id(s) = grp_id_read(tmp_idx,:);
     end

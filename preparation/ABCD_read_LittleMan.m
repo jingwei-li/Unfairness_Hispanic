@@ -58,12 +58,14 @@ cd(fullfile(csv_dir, 'phenotype'))
 system('datalad get -s inm7-storage lmtp201.txt')
 
 LMT_csv = fullfile(csv_dir, 'phenotype', 'lmtp201.txt');
-LMT_hdr = {'lmt_scr_perc_correct', 'lmt_scr_rt_correct', 'lmt_scr_efficiency'};
-LMT_colloquial = {'Visuospatial accuracy', 'Visuospatial reaction time', 'Visuospatial efficiency'};
+LMT_hdr = {'lmt_scr_perc_correct', 'lmt_scr_rt_correct'}; % 'lmt_scr_efficiency' is removed because this column is all empty in the csv file from DCAN lab
+LMT_colloquial = {'Visuospatial accuracy', 'Visuospatial reaction time'}; % therefore, 'Visuospatial efficiency' is removed
 for c = 1:length(LMT_colloquial)
     LMT_col_plot{c} = regexprep(LMT_colloquial{c}, ' +', '_');
 end
 subj_hdr = 'subjectkey';
+ses_hdr = 'eventname';
+ses = 'baseline_year_1_arm_1';
 
 if(~exist('subj_list', 'var') || isempty(subj_list))
     subj_list = fullfile(proj_dir, 'scripts', 'lists', 'subjects_rs_censor.txt');
@@ -87,9 +89,11 @@ for c = 1:length(LMT_hdr)
 end
 
 % select only the rows corresponding to required subjects
+baseline_idx = strcmp(d.(ses_hdr), ses);
 LMT = cell(nsub, length(LMT_hdr));
 for s = 1:nsub
     tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s});
+    tmp_idx = tmp_idx & baseline_idx;
     if(any(tmp_idx==1))
         LMT(s,:) = LMT_read(tmp_idx,:);
     end

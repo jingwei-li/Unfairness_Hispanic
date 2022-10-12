@@ -92,9 +92,8 @@ end
 % select only the rows corresponding to required subjects
 CBCL = cell(nsub, length(CBCL_hdr));
 for s = 1:nsub
-    tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s});
+    tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s}) & base_event;
     if(any(tmp_idx==1))
-        tmp_idx = tmp_idx & base_event;
         CBCL(s,:) = CBCL_read(tmp_idx,:);
     end
 end

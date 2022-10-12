@@ -49,11 +49,22 @@ if(~exist('subj_list', 'var') || isempty(subj_list))
     subj_list = fullfile(proj_dir, 'scripts', 'lists', 'subjects_rs_censor.txt');
 end
 
-if(~exist(fullfile(outdir, 'FD'), 'dir'))
-    mkdir(fullfile(outdir, 'FD'))
+if(dosave==1)
+    if(~exist(fullfile(outdir, 'FD'), 'dir'))
+        mkdir(fullfile(outdir, 'FD'))
+    end
+    if(~exist(fullfile(outdir, 'DVARS'), 'dir'))
+        mkdir(fullfile(outdir, 'DVARS'))
+    end
+else
+    outdir = []; outstem = [];
 end
-if(~exist(fullfile(outdir, 'DVARS'), 'dir'))
-    mkdir(fullfile(outdir, 'DVARS'))
+
+if(exist(fullfile(outdir, ['FD' outstem '.txt']), 'file') && exist(fullfile(outdir, ['DV' outstem '.txt']), 'file'))
+    FD = dlmread(fullfile(outdir, ['FD' outstem '.txt']));
+    DVARS = dlmread(fullfile(outdir, ['DV' outstem '.txt']));
+    fprintf('[ABCD_read_motion]: Read FD and DV from pre-saved files.\n')
+    return
 end
 
 [subjects, nsub] = CBIG_text2cell(subj_list);
@@ -77,10 +88,10 @@ for i = 1:nsub
         for j = 1:length(runs)
             runnum = strsplit(runs{j}, '_'); runnum = runnum{4};
             %% check if dtseries file of current run was generated
-            dt = [s '_' ses '_task-rest_run-*_bold_timeseries.dtseries.nii']
+            dt = [s '_' ses '_task-rest_' runnum '_bold_timeseries.dtseries.nii']
             [flag, msg] = system(sprintf('ls -d %s', dt));
             if(flag~=0)
-                warning('%d does not exist.', dt)
+                warning('%s does not exist.\n', dt)
                 continue
             end
 

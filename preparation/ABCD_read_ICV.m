@@ -1,4 +1,4 @@
-function ICV = ABCD_read_ICV(subj_list, race, dohist, hist_fname, FSdir)
+function ICV = ABCD_read_ICV(subj_list, race, txtname, dohist, hist_fname, FSdir)
 
 % ICV = ABCD_read_ICV(subj_list, race, dohist, hist_fname, FSdir)
 %
@@ -12,6 +12,9 @@ function ICV = ABCD_read_ICV(subj_list, race, dohist, hist_fname, FSdir)
 % - race
 %   A cell of strings. Each cell array corresponds to the ethnicity/race of one subject.
 %   This cell can be obtained by `ABCD_read_race.m`.
+%
+% - txtdir
+%   The full-path filename of the output text file containing all ICV values.
 % 
 % - dohist
 %   A 1/0 value determining whether the histograms are created or not. 
@@ -39,36 +42,58 @@ if(~exist('dohist', 'var') || isempty(dohist))
 end
 
 proj_dir = '/data/project/FairAI_Hispanic';
-if(~exist('FSdir', 'var') || isempty(FSdir))
-    FSdir = fullfile(proj_dir, 'data', 'inm7-superds', 'original', 'abcd', 'derivatives', 'freesurfer-5.3.0-HCP');
-end
-cd(FSdir)
-system('datalad get -n .')
-system('git -C . config --local --add remote.datalad.annex-ignore true')
 
 if(~exist('subj_list', 'var') || isempty(subj_list))
     subj_list = fullfile(proj_dir, 'scripts', 'lists', 'subjects_rs_censor.txt');
 end
 [subjects, nsub] = CBIG_text2cell(subj_list);
 
-ICV = nan(nsub,1);
-ses = 'ses-baselineYear1Arm1';
-for i = 1:nsub
-    s = subjects{i}
-    system(sprintf('datalad get -n %s', s))
-    system(sprintf('git -C %s config --local --add remote.datalad.annex-ignore true', s))
-    system(sprintf('datalad get -s inm7-storage %s/%s/stats/aseg.stats', s, ses))
-    
-    FSstats = CBIG_text2cell(fullfile(FSdir, s, ses, 'stats', 'aseg.stats'));
-    ICV_row = contains(FSstats, 'Intracranial Volume');
-    if(exist('ICV_row', 'var') && any(ICV_row==1))
-        ICV_row = FSstats{ICV_row==1};
-        row_split = strsplit(ICV_row, ',');
-        ICV(i) = str2double(row_split{4});
+flag = 0;
+if(exist(txtname, 'file'))
+    ICV = dlmread(txtname);
+    if(length(ICV) == nsub)
+        flag = 1;
+    end
+end
+
+if(flag == 0)
+    if(~exist('FSdir', 'var') || isempty(FSdir))
+        FSdir = fullfile(proj_dir, 'data', 'inm7-superds', 'original', 'abcd', 'derivatives', 'freesurfer-5.3.0-HCP');
+    end
+    cd(FSdir)
+    system('datalad get -n .')
+    system('git -C . config --local --add remote.datalad.annex-ignore true')
+
+    ICV = nan(nsub,1);
+    ses = 'ses-baselineYear1Arm1';
+    for i = 1:nsub
+        s = subjects{i}
+        system(sprintf('datalad get -n %s', s))
+        system(sprintf('git -C %s config --local --add remote.datalad.annex-ignore true', s))
+        system(sprintf('datalad get -s inm7-storage %s/%s/stats/aseg.stats', s, ses))
+        
+        if(~exist(fullfile(FSdir, s, ses, 'stats', 'aseg.stats'), 'file'))
+            warning('%s does not exist.\n', fullfile(FSdir, s, ses, 'stats', 'aseg.stats'))
+            continue
+        end
+
+        FSstats = CBIG_text2cell(fullfile(FSdir, s, ses, 'stats', 'aseg.stats'));
+        ICV_row = contains(FSstats, 'Intracranial Volume');
+        if(exist('ICV_row', 'var') && any(ICV_row==1))
+            ICV_row = FSstats{ICV_row==1};
+            row_split = strsplit(ICV_row, ',');
+            ICV(i) = str2double(row_split{4});
+        end
+
+        system(sprintf('datalad drop %s/%s/stats/aseg.stats', s, ses))
+        system(sprintf('datalad uninstall %s', s))
     end
 
-    system(sprintf('datalad drop %s/%s/stats/aseg.stats', s, ses))
-    system(sprintf('datalad uninstall %s', s))
+    txtdir = fileparts(txtname);
+    if(~exist(txtdir, 'dir'))
+        mkdir(txtdir)
+    end
+    dlmwrite(txtname, ICV)
 end
 
 if(dohist==1)

@@ -13,5 +13,5 @@ arguments   = -singleCompThread -r ABCD_read_all_measures('/data/project/FairAI_
 log         = /data/project/FairAI_Hispanic/scripts/logs/ABCD_read_all_measures_$(Cluster).$(Process).log
 output      = /data/project/FairAI_Hispanic/scripts/logs/ABCD_read_all_measures_$(Cluster).$(Process).out
 error       = /data/project/FairAI_Hispanic/scripts/logs/ABCD_read_all_measures_$(Cluster).$(Process).err
-requirements = Machine == "cpu10.htc.inm7.de"
+requirements = Machine == "cpu11.htc.inm7.de"
 Queue

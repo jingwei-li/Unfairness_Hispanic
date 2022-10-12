@@ -67,9 +67,8 @@ d = readtable(gender_csv);
 base_event = strcmp(d.(event_hdr), 'baseline_year_1_arm_1');
 gender = cell(nsub,1);
 for s = 1:nsub
-    tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s});
+    tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s}) & base_event;
     if(any(tmp_idx==1))
-        tmp_idx = tmp_idx & base_event;
         gender(s) = d.(gender_hdr)(tmp_idx);
     end
 end

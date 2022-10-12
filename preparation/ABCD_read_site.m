@@ -73,9 +73,8 @@ d = readtable(site_csv);
 base_event = strcmp(d.(event_hdr), 'baseline_year_1_arm_1');
 site = cell(nsub,1);
 for s = 1:nsub
-    tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s});
+    tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s}) & base_event;
     if(any(tmp_idx==1))
-        tmp_idx = tmp_idx & base_event;
         site(s) = d.(site_hdr)(tmp_idx);
     end
 end

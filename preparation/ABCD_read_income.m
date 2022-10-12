@@ -53,6 +53,7 @@ system('datalad get -s inm7-storage pdem02.txt')
 income_csv = fullfile(csv_dir, 'phenotype', 'pdem02.txt');
 income_hdr = 'demo_comb_income_v2';
 subj_hdr = 'subjectkey';
+event_hdr = 'eventname';
 
 if(~exist('subj_list', 'var') || isempty(subj_list))
     subj_list = fullfile(proj_dir, 'scripts', 'lists', 'subjects_rs_censor.txt');
@@ -67,9 +68,10 @@ for s = 1:nsub
 end
 
 d = readtable(income_csv);
+base_event = strcmp(d.(event_hdr), 'baseline_year_1_arm_1');
 income = cell(nsub,1);
 for s = 1:nsub
-    tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s});
+    tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s}) & base_event;
     if(any(tmp_idx==1))
         income(s) = d.(income_hdr)(tmp_idx);
     end

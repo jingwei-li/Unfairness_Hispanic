@@ -72,7 +72,7 @@ fprintf('Empty site: %d subjects.\n', length(find(site_empty)));
 [FD, DVARS] = ABCD_read_motion(fmri_dir, subj_list, 1, outdir, outstem);
 
 % 6. brain volume
-[ICV] = ABCD_read_ICV(subj_list, race, dohist, FSdir);
+[ICV] = ABCD_read_ICV(subj_list, race, fullfile(outdir, ['ICV' outstem '.txt']), dohist, FSdir);
 ICV_empty = isnan(ICV);
 fprintf('Empty ICV: %d subjects.\n', length(find(ICV_empty)));
 
@@ -208,6 +208,7 @@ else
         RAVLT_empty | WISC_empty | NIH_empty | LMT_empty | CBCL_empty | PGBI_empty | ...
         PPS_empty | UPPS_empty | BISBAS_empty;
 end
+
 any_empty = any_empty | isPhilips;
 pass_subj = subjectkey(~any_empty);
 if(bool_income)

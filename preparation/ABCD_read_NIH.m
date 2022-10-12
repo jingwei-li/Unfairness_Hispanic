@@ -72,6 +72,8 @@ for c = 1:length(NIH_colloquial)
     NIH_col_plot{c} = regexprep(NIH_colloquial{c}, ' +', '_');
 end
 subj_hdr = 'subjectkey';
+ses_hdr = 'eventname';
+ses = 'baseline_year_1_arm_1';
 
 if(~exist('subj_list', 'var') || isempty(subj_list))
     subj_list = fullfile(proj_dir, 'scripts', 'lists', 'subjects_rs_censor.txt');
@@ -95,9 +97,11 @@ for c = 1:length(NIH_hdr)
 end
 
 % select only the rows corresponding to required subjects
+baseline_idx = strcmp(d.(ses_hdr), ses);
 NIH = cell(nsub, length(NIH_hdr));
 for s = 1:nsub
     tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s});
+    tmp_idx = tmp_idx & baseline_idx;
     if(any(tmp_idx==1))
         NIH(s,:) = NIH_read(tmp_idx,:);
     end

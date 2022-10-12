@@ -63,6 +63,8 @@ for c = 1:length(RAVLT_colloquial)
     RAVLT_col_plot{c} = regexprep(RAVLT_colloquial{c}, ' +', '_');
 end
 subj_hdr = 'subjectkey';
+ses_hdr = 'eventname';
+ses = 'baseline_year_1_arm_1';
 
 if(~exist('subj_list', 'var') || isempty(subj_list))
     subj_list = fullfile(proj_dir, 'scripts', 'lists', 'subjects_rs_censor.txt');
@@ -86,9 +88,11 @@ for c = 1:length(RAVLT_hdr)
 end
 
 % select only the rows corresponding to required subjects
+baseline_idx = strcmp(d.(ses_hdr), ses);
 RAVLT = cell(nsub, length(RAVLT_hdr));
 for s = 1:nsub
     tmp_idx = strcmp(d.(subj_hdr), subjects_csv{s});
+    tmp_idx = tmp_idx & baseline_idx;
     if(any(tmp_idx==1))
         RAVLT(s,:) = RAVLT_read(tmp_idx,:);
     end
