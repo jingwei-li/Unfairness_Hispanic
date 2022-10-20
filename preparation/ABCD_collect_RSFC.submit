@@ -1,0 +1,17 @@
+# The environment
+universe              = vanilla
+getenv                = True
+request_cpus          = 1
+request_memory        = 5G
+
+# Execution
+initialdir            = /data/project/FairAI_Hispanic/scripts/Unfairness_Hispanic/preparation
+executable            = /usr/bin/matlab95
+transfer_executable   = False
+
+arguments   = -singleCompThread -r ABCD_collect_RSFC('/data/project/parcellate_ABCD_preprocessed/data/parcellated_timeseries','/data/project/parcellate_ABCD_preprocessed/scripts/lists/subjects_rs_censor.mat','/data/project/FairAI_Hispanic/scripts/lists/subjects_rs_censor_pheno.txt',2,'/data/project/FairAI_Hispanic/data/ABCD/mat/RSFC/pass_censor_pheno.mat')
+log         = /data/project/FairAI_Hispanic/scripts/logs/ABCD_collect_RSFC_$(Cluster).$(Process).log
+output      = /data/project/FairAI_Hispanic/scripts/logs/ABCD_collect_RSFC_$(Cluster).$(Process).out
+error       = /data/project/FairAI_Hispanic/scripts/logs/ABCD_collect_RSFC_$(Cluster).$(Process).err
+requirements = Machine == "cpu11.htc.inm7.de"
+Queue
