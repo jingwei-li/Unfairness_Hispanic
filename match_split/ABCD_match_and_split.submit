@@ -1,0 +1,17 @@
+# The environment
+universe              = vanilla
+getenv                = True
+request_cpus          = 1
+request_memory        = 5G
+
+# Execution
+initialdir            = /data/project/FairAI_Hispanic/scripts/Unfairness_ABCD_process/match_split
+executable            = /usr/bin/matlab95
+transfer_executable   = False
+
+arguments   = -singleCompThread -r ABCD_match_and_split('/data/project/FairAI_Hispanic/scripts/lists/phenotypes_rs_censor.txt','/data/project/FairAI_Hispanic/scripts/lists/subjects_rs_censor_pheno.txt','race','site','family_id','/data/project/FairAI_Hispanic/scripts/lists/confounds_list.txt','/data/project/FairAI_Hispanic/scripts/lists/behavior_list.txt',150,1.65,'/data/project/FairAI_Hispanic/data/ABCD/mat/matchANDsplit/20221012','_rs_censor_pheno')
+log         = /data/project/FairAI_Hispanic/scripts/logs/ABCD_match_and_split_$(Cluster).$(Process).log
+output      = /data/project/FairAI_Hispanic/scripts/logs/ABCD_match_and_split_$(Cluster).$(Process).out
+error       = /data/project/FairAI_Hispanic/scripts/logs/ABCD_match_and_split_$(Cluster).$(Process).err
+requirements = Machine == "cpu23.htc.inm7.de"
+Queue
